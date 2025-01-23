@@ -3,8 +3,18 @@ class ProductsComponent extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' });
 
+    // Inicializar variables
+    this.productsDisponibles = [];
     this.products = [];
 
+    // Importar productos desde otro archivo
+    import('../../data/data.js').then(module => {
+      this.productsDisponibles = module.productsDisponibles;
+      this.initializeComponent();
+    });
+  }
+
+  initializeComponent() {
     this.shadowRoot.innerHTML = /*html*/`
       <style>
         @import url('components/ciudad/style.css');
@@ -12,16 +22,19 @@ class ProductsComponent extends HTMLElement {
       </style>
       <div class="container">
         <div class="row">
-        <div class="col-md-8">
-          <div class="mb-3">
-            <label for="product-name" class="form-label">Nombre Del Producto:</label>
-            <input type="text" class="form-control" id="product-name" name="product-name">
+          <div class="col-md-8">
+            <div class="mb-3">
+              <label for="product-name" class="form-label">Nombre Del Producto:</label>
+              <input type="text" list="product-list" class="form-control" id="product-name" name="product-name">
+              <datalist id="product-list">
+                ${this.productsDisponibles.map(p => `<option value="${p.name}">`).join('')}
+              </datalist>
+            </div>
           </div>
-        </div>
           <div class="col-md-4">
             <div class="mb-3">
               <label for="product-code" class="form-label">Codigo Producto:</label>
-              <input type="text" class="form-control" id="product-code" name="product-code">
+              <input type="text" class="form-control" id="product-code" name="product-code" readonly>
             </div>
           </div>
         </div>
@@ -29,7 +42,7 @@ class ProductsComponent extends HTMLElement {
           <div class="col-md-6">
             <div class="mb-3">
               <label for="unit-price" class="form-label">Valor Unitario:</label>
-              <input type="text" class="form-control" id="unit-price" name="unit-price">
+              <input type="text" class="form-control" id="unit-price" name="unit-price" readonly>
             </div>
           </div>
           <div class="col-md-6">
@@ -47,26 +60,42 @@ class ProductsComponent extends HTMLElement {
       </div>
     `;
 
+    this.shadowRoot.getElementById('product-name').addEventListener('input', this.autocompleteProduct.bind(this));
     this.addProductButton = this.shadowRoot.getElementById('add-product');
     this.addProductButton.addEventListener('click', this.addProduct.bind(this));
+  }
+
+  autocompleteProduct(event) {
+    const productName = event.target.value;
+    const product = this.productsDisponibles.find(p => p.name === productName);
+
+    if (product) {
+      this.shadowRoot.getElementById('product-code').value = product.code;
+      this.shadowRoot.getElementById('unit-price').value = product.unitPrice;
+    } else {
+      this.shadowRoot.getElementById('product-code').value = '';
+      this.shadowRoot.getElementById('unit-price').value = '';
+    }
   }
 
   addProduct() {
     const productCode = this.shadowRoot.getElementById('product-code').value;
     const productName = this.shadowRoot.getElementById('product-name').value;
-    const unitPrice = this.shadowRoot.getElementById('unit-price').value;
-    const quantity = this.shadowRoot.getElementById('quantity').value;
+    const unitPrice = parseFloat(this.shadowRoot.getElementById('unit-price').value);
+    const quantity = parseInt(this.shadowRoot.getElementById('quantity').value);
 
-    if (productCode && productName && unitPrice && quantity) {
+    if (productCode && productName && !isNaN(unitPrice) && !isNaN(quantity) && quantity > 0) {
       this.products.push({ productCode, productName, unitPrice, quantity });
       this.dispatchEvent(new CustomEvent('product-added', { detail: { products: this.products } }));
       this.clearInputFields();
+    } else {
+      alert('Por favor, completa todos los campos correctamente.');
     }
   }
 
   clearInputFields() {
-    this.shadowRoot.getElementById('product-code').value = '';
     this.shadowRoot.getElementById('product-name').value = '';
+    this.shadowRoot.getElementById('product-code').value = '';
     this.shadowRoot.getElementById('unit-price').value = '';
     this.shadowRoot.getElementById('quantity').value = '';
   }
