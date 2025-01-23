@@ -1,4 +1,4 @@
-this.productsDisponibles = [
+export const productsDisponibles = [
     { code: '001', name: 'Azucar', unitPrice: 2500 },
     { code: '002', name: 'Harina', unitPrice: 2200 },
     { code: '003', name: 'Aceite', unitPrice: 10000 },

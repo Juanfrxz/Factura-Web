@@ -1,20 +1,20 @@
+import { productsDisponibles } from '../../data/data.js';
+
 class ProductsComponent extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
 
-    // Inicializar variables
-    this.productsDisponibles = [];
+    // Inicializar productos disponibles y productos agregados
+    this.productsDisponibles = productsDisponibles;
     this.products = [];
 
-    // Importar productos desde otro archivo
-    import('../../data/data.js').then(module => {
-      this.productsDisponibles = module.productsDisponibles;
-      this.initializeComponent();
-    });
+    // Inicializar el componente
+    this.initializeComponent();
   }
 
   initializeComponent() {
+    // Renderizar el contenido HTML del componente
     this.shadowRoot.innerHTML = /*html*/`
       <style>
         @import url('components/ciudad/style.css');
@@ -33,7 +33,7 @@ class ProductsComponent extends HTMLElement {
           </div>
           <div class="col-md-4">
             <div class="mb-3">
-              <label for="product-code" class="form-label">Codigo Producto:</label>
+              <label for="product-code" class="form-label">Código Producto:</label>
               <input type="text" class="form-control" id="product-code" name="product-code" readonly>
             </div>
           </div>
@@ -48,7 +48,7 @@ class ProductsComponent extends HTMLElement {
           <div class="col-md-6">
             <div class="mb-3">
               <label for="quantity" class="form-label">Cantidad:</label>
-              <input type="number" class="form-control" id="quantity" name="quantity">
+              <input type="number" class="form-control" id="quantity" name="quantity" min="1">
             </div>
           </div>
         </div>
@@ -60,6 +60,7 @@ class ProductsComponent extends HTMLElement {
       </div>
     `;
 
+    // Agregar eventos a los elementos
     this.shadowRoot.getElementById('product-name').addEventListener('input', this.autocompleteProduct.bind(this));
     this.addProductButton = this.shadowRoot.getElementById('add-product');
     this.addProductButton.addEventListener('click', this.addProduct.bind(this));
@@ -78,21 +79,6 @@ class ProductsComponent extends HTMLElement {
     }
   }
 
-  addProduct() {
-    const productCode = this.shadowRoot.getElementById('product-code').value;
-    const productName = this.shadowRoot.getElementById('product-name').value;
-    const unitPrice = parseFloat(this.shadowRoot.getElementById('unit-price').value);
-    const quantity = parseInt(this.shadowRoot.getElementById('quantity').value);
-
-    if (productCode && productName && !isNaN(unitPrice) && !isNaN(quantity) && quantity > 0) {
-      this.products.push({ productCode, productName, unitPrice, quantity });
-      this.dispatchEvent(new CustomEvent('product-added', { detail: { products: this.products } }));
-      this.clearInputFields();
-    } else {
-      alert('Por favor, completa todos los campos correctamente.');
-    }
-  }
-
   clearInputFields() {
     this.shadowRoot.getElementById('product-name').value = '';
     this.shadowRoot.getElementById('product-code').value = '';
@@ -101,4 +87,5 @@ class ProductsComponent extends HTMLElement {
   }
 }
 
+// Definir el custom element
 customElements.define('products-component', ProductsComponent);
