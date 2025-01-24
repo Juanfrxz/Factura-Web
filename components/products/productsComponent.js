@@ -66,6 +66,7 @@ class ProductsComponent extends HTMLElement {
     this.addProductButton.addEventListener('click', this.addProduct.bind(this));
   }
 
+  // Autocompletar los campos de código de producto y valor unitario
   autocompleteProduct(event) {
     const productName = event.target.value;
     const product = this.productsDisponibles.find(p => p.name === productName);
@@ -78,43 +79,70 @@ class ProductsComponent extends HTMLElement {
       this.shadowRoot.getElementById('unit-price').value = '';
     }
   }
-  addProduct() {
-    const productName = this.shadowRoot.getElementById('product-name').value;
-    const productCode = this.shadowRoot.getElementById('product-code').value;
-    const unitPrice = this.shadowRoot.getElementById('unit-price').value;
-    const quantity = this.shadowRoot.getElementById('quantity').value;
-  
-    if (productName && productCode && unitPrice && quantity) {
-      const product = {
-        productName,
-        productCode,
-        unitPrice: parseFloat(unitPrice).toFixed(2),
-        quantity: parseInt(quantity, 10)
-      };
-  
-      // Crear y despachar un evento personalizado
-      const event = new CustomEvent('product-added', {
-        detail: product, // Enviar el producto directamente
-        bubbles: true,
-        composed: true
-      });
-  
-      this.dispatchEvent(event);
-  
-      // Limpiar los campos de entrada
-      this.clearInputFields();
-    } else {
-      alert('Por favor, llena todos los campos antes de agregar un producto.');
-    }
-  }
-  
-  
+
+
+  // limpiar los cuadros de texto
   clearInputFields() {
     this.shadowRoot.getElementById('product-name').value = '';
     this.shadowRoot.getElementById('product-code').value = '';
     this.shadowRoot.getElementById('unit-price').value = '';
     this.shadowRoot.getElementById('quantity').value = '';
+}
+
+addProduct() {
+  const productName = this.shadowRoot.getElementById('product-name').value;
+  const productCode = this.shadowRoot.getElementById('product-code').value;
+  const unitPrice = parseFloat(this.shadowRoot.getElementById('unit-price').value);
+  const quantity = parseInt(this.shadowRoot.getElementById('quantity').value);
+
+  if (productName && productCode && unitPrice && quantity) {
+    const product = {
+      name: productName,
+      code: productCode,
+      unitPrice: unitPrice,
+      quantity: quantity,
+      subtotal: unitPrice * quantity
+    };
+
+    this.products.push(product);
+    this.renderProductTable();
+    this.clearInputFields();
   }
+}
+
+renderProductTable() {
+  let table = this.shadowRoot.getElementById('product-table');
+  if (!table) {
+    table = document.createElement('table');
+    table.id = 'product-table';
+    table.classList.add('table', 'table-striped');
+    table.innerHTML = /*html*/`
+      <thead>
+        <tr>
+          <th>Código Producto</th>
+          <th>Nombre</th>
+          <th>Cantidad</th>
+          <th>Valor Unitario</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    `;
+    this.shadowRoot.appendChild(table);
+  }
+
+  const tbody = table.querySelector('tbody');
+  tbody.innerHTML = this.products.map(p => /*html*/`
+    <tr>
+      <td>${p.code}</td>
+      <td>${p.name}</td>
+      <td>${p.quantity}</td>
+      <td>${p.unitPrice.toFixed(2)}</td>
+      <td>${p.subtotal.toFixed(2)}</td>
+    </tr>
+  `).join('');
+}
+
 }
 
 // Definir el custom element
