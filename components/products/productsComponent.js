@@ -78,7 +78,37 @@ class ProductsComponent extends HTMLElement {
       this.shadowRoot.getElementById('unit-price').value = '';
     }
   }
-
+  addProduct() {
+    const productName = this.shadowRoot.getElementById('product-name').value;
+    const productCode = this.shadowRoot.getElementById('product-code').value;
+    const unitPrice = this.shadowRoot.getElementById('unit-price').value;
+    const quantity = this.shadowRoot.getElementById('quantity').value;
+  
+    if (productName && productCode && unitPrice && quantity) {
+      const product = {
+        productName,
+        productCode,
+        unitPrice: parseFloat(unitPrice).toFixed(2),
+        quantity: parseInt(quantity, 10)
+      };
+  
+      // Crear y despachar un evento personalizado
+      const event = new CustomEvent('product-added', {
+        detail: product, // Enviar el producto directamente
+        bubbles: true,
+        composed: true
+      });
+  
+      this.dispatchEvent(event);
+  
+      // Limpiar los campos de entrada
+      this.clearInputFields();
+    } else {
+      alert('Por favor, llena todos los campos antes de agregar un producto.');
+    }
+  }
+  
+  
   clearInputFields() {
     this.shadowRoot.getElementById('product-name').value = '';
     this.shadowRoot.getElementById('product-code').value = '';
