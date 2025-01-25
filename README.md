@@ -2,6 +2,10 @@
 
 ¡Bienvenido a **Factura-Web**! 🎉 Este es un proyecto diseñado para simplificar la facturación utilizando **Web Components** y **Bootstrap**. Ideal para quienes buscan aprender o implementar una solución moderna y eficiente para manejar productos, subtotales, IVA y totales en una aplicación web. 🚀
 
+## 🌐 Link page
+
+[Factura Web](https://juanfrxz.github.io/Factura-Web/)
+
 ## 🚀 Funcionalidades
 
 - 📦 **Gestión de Productos**: Agrega productos con su nombre, código, cantidad y precio unitario.
