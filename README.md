@@ -4,7 +4,7 @@
 
 ## 🌐 Link page
 
-[Factura Wen](https://juanfrxz.github.io/Factura-Web/).
+[Factura Web](https://juanfrxz.github.io/Factura-Web/)
 
 ## 🚀 Funcionalidades
 
