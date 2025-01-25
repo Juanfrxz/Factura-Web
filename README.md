@@ -4,7 +4,7 @@
 
 ## 🌐 Link page
 
-[Cine Campus Page](https://juanfrxz.github.io/Factura-Web/).
+[Factura Wen](https://juanfrxz.github.io/Factura-Web/).
 
 ## 🚀 Funcionalidades
 
