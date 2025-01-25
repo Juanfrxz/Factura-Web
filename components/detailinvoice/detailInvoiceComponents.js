@@ -36,9 +36,15 @@ class TotalsComponent extends HTMLElement {
   }
 
   connectedCallback() {
-    // Inicializa los valores en cero al cargar el componente
     this.updateTotals(0);
+  
+    // Escuchar el evento personalizado
+    window.addEventListener('update-totals', (event) => {
+      const { subtotal } = event.detail;
+      this.updateTotals(subtotal);
+    });
   }
+  
   
 
   updateTotals(subtotal) {

@@ -101,14 +101,25 @@ addProduct() {
       code: productCode,
       unitPrice: unitPrice,
       quantity: quantity,
-      subtotal: unitPrice * quantity
+      subtotal: unitPrice * quantity,
     };
 
     this.products.push(product);
     this.renderProductTable();
     this.clearInputFields();
+
+    // Calcula el subtotal general
+    const subtotalGeneral = this.products.reduce((acc, p) => acc + p.subtotal, 0);
+
+    // Dispara un evento personalizado con el subtotal general
+    this.dispatchEvent(new CustomEvent('update-totals', {
+      detail: { subtotal: subtotalGeneral },
+      bubbles: true,
+      composed: true
+    }));
   }
 }
+
 
 renderProductTable() {
   let table = this.shadowRoot.getElementById('product-table');
